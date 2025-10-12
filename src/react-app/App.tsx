@@ -79,12 +79,20 @@ function App() {
       setModelConfig({
         title: "HTTP Bin has been created",
         description: (
-          <>
-            Preview at{" "}
-            <a href={`${window.location.origin}/bin/${data.bin}`}>
-              {window.location.origin}/bin/{data.bin}
-            </a>
-          </>
+          <ul>
+            <li>Bin ID: {data.bin}</li>
+            <li>Token (Keep it safe!): {data.token}</li>
+            <li>
+              Preview at{" "}
+              <a href={`${window.location.origin}/bin/${data.bin}`}>
+                {window.location.origin}/bin/${data.bin}
+              </a>
+            </li>
+            <li>
+              Delete: [DELETE] {window.location.origin}/api/bin/${data.bin}
+              ?token={data.token}
+            </li>
+          </ul>
         ),
         isOpen: true,
       });
