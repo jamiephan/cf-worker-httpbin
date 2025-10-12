@@ -58,7 +58,7 @@ app.all("/bin/:binId", async (c) => {
   return new Response(body, {
     status: data.statusCode,
     headers: headers.reduce((acc, curr) => {
-      acc.append(curr.name, curr.value);
+      acc.append(placeholder(curr.name), placeholder(curr.value));
       return acc;
     }, new Headers()),
   });
