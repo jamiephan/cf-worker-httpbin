@@ -17,6 +17,13 @@ app.post("/api/bin", async (c) => {
   });
 });
 
+// Delete endpoint to remove a bin
+app.delete("/api/bin/:binId", async (c) => {
+  const { binId } = c.req.param();
+  await c.env.CF_KV.delete(binId);
+  return c.json({ success: true });
+});
+
 app.all("/bin/:binId", async (c) => {
   const { binId } = c.req.param();
   const binData = await c.env.CF_KV.get(binId);
