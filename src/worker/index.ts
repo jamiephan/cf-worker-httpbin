@@ -19,4 +19,13 @@ app.post("/api/bin", async (c) => {
   });
 });
 
+app.all("/bin/:binId", async (c) => {
+  const { binId } = c.req.param();
+  const binData = await c.env.CF_KV.get(binId);
+  if (!binData) {
+    return c.notFound();
+  }
+  return c.json(JSON.parse(binData));
+});
+
 export default app;
