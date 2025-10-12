@@ -100,6 +100,34 @@ function App() {
                 curl -X DELETE {window.location.origin}/api/bin/{data.bin}
                 ?token={data.token}
               </code>
+              <button
+                className="secondary"
+                onClick={async () => {
+                  const res = await fetch(
+                    `/api/bin/${data.bin}?token=${data.token}`,
+                    {
+                      method: "DELETE",
+                    }
+                  );
+                  const result = await res.json();
+                  if (result.success) {
+                    setModelConfig({
+                      title: "HTTP Bin has been deleted",
+                      description: (
+                        <>
+                          The bin <code>{data.bin}</code> has been deleted
+                          successfully.
+                        </>
+                      ),
+                      isOpen: true,
+                    });
+                  } else {
+                    alert("Failed to delete bin");
+                  }
+                }}
+              >
+                Delete now
+              </button>
             </li>
           </ul>
         ),
