@@ -1,8 +1,10 @@
 // src/App.tsx
 
-import "./App.css";
+import { Turnstile } from "@marsidev/react-turnstile";
 import { useForm } from "@tanstack/react-form";
-import { useState } from "react";
+import { useRef, useState } from "react";
+
+import "./App.css";
 
 const commonResponseHeaders = [
   "Accept-CH",
@@ -56,6 +58,8 @@ const commonResponseHeaders = [
 ];
 
 function App() {
+  const ref = useRef(null);
+
   const [modelConfig, setModelConfig] = useState({
     title: "",
     description: <></>,
@@ -68,13 +72,30 @@ function App() {
       body: "",
     },
     onSubmit: async ({ value }) => {
+      // Get the Turnstile token
+      // @ts-expect-error turnstile ref
+      await ref.current?.reset();
+      // @ts-expect-error turnstile ref
+      const turnstileToken = await ref.current?.getResponsePromise();
+
       const res = await fetch("/api/bin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(value),
+        body: JSON.stringify({ ...value, turnstileToken }),
       });
+      if (!res.ok) {
+        const error = await res.json();
+        setModelConfig({
+          title: "Error",
+          description: (
+            <>Failed to create bin: {error.error || "Unknown error"}</>
+          ),
+          isOpen: true,
+        });
+        return;
+      }
       const data = await res.json();
       setModelConfig({
         title: "HTTP Bin has been created",
@@ -338,6 +359,10 @@ function App() {
               />
             )}
           </form.Field>
+
+          <div style={{ marginTop: 16, marginBottom: 16 }}>
+            <Turnstile ref={ref} siteKey="0x4AAAAAAB6L4sQbViN1FAE2" />
+          </div>
 
           <form.Subscribe
             selector={(state) => [state.canSubmit, state.isSubmitting]}

@@ -2,20 +2,43 @@ import { Hono } from "hono";
 import { nanoid } from "nanoid";
 import { KVBin } from "./../interface/KBBin";
 import placeholder from "../placeholders";
-
-import type { BinRequest } from "./../interface/BinRequest";
+import validateTurnstile from "./helpers/turnstile";
 import type { BinResponse } from "./../interface/BinResponse";
+import type { BinRequestCaptcha } from "../interface/BinRequestCaptcha";
 
 const app = new Hono<{ Bindings: Env }>();
 
 // A Post endpoint to receive the form data
 app.post("/api/bin", async (c) => {
-  const req = await c.req.json<BinRequest>();
+  const req = await c.req.json<BinRequestCaptcha>();
+
+  try {
+    // Validate Turnstile token
+    const turnstileToken = req.turnstileToken;
+    const remoteIp = c.req.header("CF-Connecting-IP") || "";
+
+    const r = await validateTurnstile(turnstileToken, remoteIp);
+    if (!r.success) {
+      return c.json({ error: "Turnstile validation failed" }, 400);
+    }
+  } catch (e) {
+    console.log(e);
+    return c.json({ error: "Turnstile validation failed" }, 400);
+  }
+
   // Generate a unique bin ID
   const binId = nanoid();
   const token = nanoid();
   // Store the request data in KV
-  await c.env.CF_KV.put(binId, JSON.stringify({ ...req, token: token }));
+  await c.env.CF_KV.put(
+    binId,
+    JSON.stringify({
+      statusCode: req.statusCode,
+      header: req.header,
+      body: req.body,
+      token: token,
+    } as KVBin)
+  );
   return c.json<BinResponse>({
     bin: binId,
     token: token,
