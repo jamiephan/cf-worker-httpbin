@@ -5,8 +5,6 @@ import type { BinRequest } from "./../interface/BinRequest";
 
 const app = new Hono<{ Bindings: Env }>();
 
-app.get("/api/", (c) => c.json({ name: "Cloudflare" }));
-
 // A Post endpoint to receive the form data
 app.post("/api/bin", async (c) => {
   const req = await c.req.json<BinRequest>();
@@ -23,7 +21,7 @@ app.all("/bin/:binId", async (c) => {
   const { binId } = c.req.param();
   const binData = await c.env.CF_KV.get(binId);
   if (!binData) {
-    return c.notFound();
+    return c.json({ error: "Not found" }, 404);
   }
   return c.json(JSON.parse(binData));
 });
