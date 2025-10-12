@@ -23,7 +23,17 @@ app.all("/bin/:binId", async (c) => {
   if (!binData) {
     return c.json({ error: "Not found" }, 404);
   }
-  return c.json(JSON.parse(binData));
+  const data = JSON.parse(binData) as BinRequest;
+
+  const headers = data.header;
+  // Response with the stored status code, headers, and body
+  return new Response(data.body, {
+    status: data.statusCode,
+    headers: headers.reduce((acc, curr) => {
+      acc.append(curr.name, curr.value);
+      return acc;
+    }, new Headers()),
+  });
 });
 
 export default app;
