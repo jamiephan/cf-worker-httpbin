@@ -1,65 +1,304 @@
 // src/App.tsx
 
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import cloudflareLogo from "./assets/Cloudflare_Logo.svg";
-import honoLogo from "./assets/hono.svg";
 import "./App.css";
+import { useForm } from "@tanstack/react-form";
+import type { BinRequest } from "../interface/BinRequest";
+import { title } from "process";
+import { useState } from "react";
+
+const commonResponseHeaders = [
+  "Accept-CH",
+  "Access-Control-Allow-Origin",
+  "Access-Control-Allow-Credentials",
+  "Access-Control-Expose-Headers",
+  "Access-Control-Max-Age",
+  "Access-Control-Allow-Methods",
+  "Access-Control-Allow-Headers",
+  "Accept-Patch",
+  "Accept-Ranges",
+  "Age",
+  "Allow",
+  "Alt-Svc",
+  "Cache-Control",
+  "Connection",
+  "Content-Disposition",
+  "Content-Encoding",
+  "Content-Language",
+  "Content-Length",
+  "Content-Location",
+  "Content-MD5",
+  "Content-Range",
+  "Content-Type",
+  "Date",
+  "Delta-Base",
+  "ETag",
+  "Expires",
+  "IM",
+  "Last-Modified",
+  "Link",
+  "Location",
+  "P3P",
+  "Pragma",
+  "Preference-Applied",
+  "Proxy-Authenticate",
+  "Public-Key-Pins",
+  "Retry-After",
+  "Server",
+  "Set-Cookie",
+  "Strict-Transport-Security",
+  "Trailer",
+  "Transfer-Encoding",
+  "Tk",
+  "Upgrade",
+  "Vary",
+  "Via",
+  "Warning",
+  "WWW-Authenticate",
+  "X-Frame-Options",
+];
 
 function App() {
-  const [count, setCount] = useState(0);
-  const [name, setName] = useState("unknown");
+  const [modelConfig, setModelConfig] = useState({
+    title: "",
+    description: <></>,
+    isOpen: false,
+  });
+  const form = useForm({
+    defaultValues: {
+      statusCode: 200,
+      header: [] as { name: string; value: string }[],
+      body: "",
+    },
+    onSubmit: async ({ value }) => {
+      const res = await fetch("/api/bin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(value),
+      });
+      const data = await res.json();
+      setModelConfig({
+        title: "HTTP Bin has been created",
+        description: (
+          <>
+            Preview at{" "}
+            <a href={`${window.location.origin}/bin/${data.bin}`}>
+              {window.location.origin}/bin/{data.bin}
+            </a>
+          </>
+        ),
+        isOpen: true,
+      });
+    },
+  });
 
   return (
-    <>
+    <main className="container">
+      <dialog open={modelConfig.isOpen}>
+        <article>
+          <h2>{modelConfig.title}</h2>
+          <p>{modelConfig.description}</p>
+          <footer>
+            <button
+              onClick={() => setModelConfig({ ...modelConfig, isOpen: false })}
+            >
+              Close
+            </button>
+          </footer>
+        </article>
+      </dialog>
+
+      <div className="header">
+        <h1>Simple HTTP Bin</h1>
+        <p>Thats it.</p>
+      </div>
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-        <a href="https://hono.dev/" target="_blank">
-          <img src={honoLogo} className="logo cloudflare" alt="Hono logo" />
-        </a>
-        <a href="https://workers.cloudflare.com/" target="_blank">
-          <img
-            src={cloudflareLogo}
-            className="logo cloudflare"
-            alt="Cloudflare logo"
-          />
-        </a>
-      </div>
-      <h1>Vite + React + Hono + Cloudflare</h1>
-      <div className="card">
-        <button
-          onClick={() => setCount((count) => count + 1)}
-          aria-label="increment"
-        >
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <div className="card">
-        <button
-          onClick={() => {
-            fetch("/api/")
-              .then((res) => res.json() as Promise<{ name: string }>)
-              .then((data) => setName(data.name));
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            form.handleSubmit();
           }}
-          aria-label="get name"
         >
-          Name from API is: {name}
-        </button>
-        <p>
-          Edit <code>worker/index.ts</code> to change the name
-        </p>
+          <h2>HTTP Status Code</h2>
+          <form.Field
+            name="statusCode"
+            validators={{
+              onChange: ({ value }) =>
+                value === undefined || value === null
+                  ? "You must enter a status code"
+                  : undefined,
+            }}
+          >
+            {(subField) => {
+              return (
+                <div>
+                  <input
+                    type="number"
+                    value={subField.state.value}
+                    onChange={(e) =>
+                      subField.handleChange(e.target.valueAsNumber)
+                    }
+                    placeholder="200"
+                    aria-invalid={
+                      !subField.state.meta.isValid ? "true" : undefined
+                    }
+                    aria-describedby={
+                      !subField.state.meta.isValid
+                        ? "invalid-status-code"
+                        : undefined
+                    }
+                  />
+                  {!subField.state.meta.isValid && (
+                    <small id="invalid-status-code">
+                      Please provide a valid status code!
+                    </small>
+                  )}
+                </div>
+              );
+            }}
+          </form.Field>
+
+          <h2>Headers</h2>
+          <datalist id="common-response-headers">
+            {commonResponseHeaders.map((header) => (
+              <option value={header} key={header} />
+            ))}
+          </datalist>
+          <form.Field name="header" mode="array">
+            {(field) => {
+              return (
+                <div>
+                  {field.state.value.map((_, i) => {
+                    return (
+                      <div className="grid" key={i}>
+                        {/* Header Name */}
+                        <form.Field
+                          name={`header[${i}].name`}
+                          validators={{
+                            onChange: ({ value }) =>
+                              !value.trim().length
+                                ? "You must enter a header name"
+                                : undefined,
+                          }}
+                        >
+                          {(subField) => {
+                            return (
+                              <div>
+                                <input
+                                  value={subField.state.value}
+                                  list="common-response-headers"
+                                  onChange={(e) =>
+                                    subField.handleChange(e.target.value)
+                                  }
+                                  placeholder={`Header ${i + 1} Name`}
+                                  aria-invalid={
+                                    !subField.state.meta.isValid
+                                      ? "true"
+                                      : undefined
+                                  }
+                                  aria-describedby={
+                                    !subField.state.meta.isValid
+                                      ? "invalid-header-name"
+                                      : undefined
+                                  }
+                                />
+                                {!subField.state.meta.isValid && (
+                                  <small id="invalid-header-name">
+                                    Please provide a valid name!
+                                  </small>
+                                )}
+                              </div>
+                            );
+                          }}
+                        </form.Field>
+
+                        {/* Header Value */}
+                        <form.Field
+                          name={`header[${i}].value`}
+                          validators={{
+                            onChange: ({ value }) =>
+                              !value.trim().length
+                                ? "You must enter a header value"
+                                : undefined,
+                          }}
+                        >
+                          {(subField) => {
+                            return (
+                              <div>
+                                <input
+                                  value={subField.state.value}
+                                  onChange={(e) =>
+                                    subField.handleChange(e.target.value)
+                                  }
+                                  placeholder={`Header ${i + 1} Value`}
+                                  aria-invalid={
+                                    !subField.state.meta.isValid
+                                      ? "true"
+                                      : undefined
+                                  }
+                                  aria-describedby={
+                                    !subField.state.meta.isValid
+                                      ? "invalid-header-value"
+                                      : undefined
+                                  }
+                                />
+                                {!subField.state.meta.isValid && (
+                                  <small id="invalid-header-value">
+                                    Please provide a valid value!
+                                  </small>
+                                )}
+                              </div>
+                            );
+                          }}
+                        </form.Field>
+
+                        {/* Remove Header */}
+                        <button
+                          type="button"
+                          className="secondary"
+                          onClick={() => field.removeValue(i)}
+                        >
+                          -
+                        </button>
+                      </div>
+                    );
+                  })}
+                  <button
+                    onClick={() => field.pushValue({ name: "", value: "" })}
+                    type="button"
+                  >
+                    +
+                  </button>
+                </div>
+              );
+            }}
+          </form.Field>
+
+          <h2>Response Body</h2>
+          <form.Field name="body">
+            {(field) => (
+              <textarea
+                value={field.state.value}
+                onChange={(e) => field.handleChange(e.target.value)}
+                placeholder="Response Body"
+                aria-invalid={!field.state.meta.isValid ? "true" : undefined}
+              />
+            )}
+          </form.Field>
+
+          <form.Subscribe
+            selector={(state) => [state.canSubmit, state.isSubmitting]}
+            children={([canSubmit, isSubmitting]) => (
+              <button type="submit" disabled={!canSubmit}>
+                {isSubmitting ? "..." : "Submit"}
+              </button>
+            )}
+          />
+        </form>
       </div>
-      <p className="read-the-docs">Click on the logos to learn more</p>
-    </>
+    </main>
   );
 }
 
