@@ -1,6 +1,8 @@
 import { KVBin } from "./../interface/KBBin";
 import { Hono } from "hono";
 import { nanoid } from "nanoid";
+import { faker } from "@faker-js/faker";
+
 import type { BinResponse } from "./../interface/BinResponse";
 import type { BinRequest } from "./../interface/BinRequest";
 
@@ -49,9 +51,31 @@ app.all("/bin/:binId", async (c) => {
   }
   const data = JSON.parse(binData) as KVBin;
 
+  // in the body, replace {{faker.xxx.yyy}} with faker data (running the corresponding faker function)
+  // For example, {{faker.internet.email}} should be replaced with `faker.internet.email()`
+
+  let body = data.body;
+  const fakerRegex = /{{faker\.([a-zA-Z0-9_]+)\.([a-zA-Z0-9_]+)}}/g;
+  body = body.replace(fakerRegex, (_, category, method) => {
+    const fakerCategory = (faker as unknown as Record<string, unknown>)[
+      category
+    ];
+    if (
+      typeof fakerCategory === "object" &&
+      fakerCategory !== null &&
+      method in fakerCategory
+    ) {
+      const fakerMethod = (fakerCategory as Record<string, unknown>)[method];
+      if (typeof fakerMethod === "function") {
+        return fakerMethod();
+      }
+    }
+    return `{{faker.${category}.${method}}}`;
+  });
+
   const headers = data.header;
   // Response with the stored status code, headers, and body
-  return new Response(data.body, {
+  return new Response(body, {
     status: data.statusCode,
     headers: headers.reduce((acc, curr) => {
       acc.append(curr.name, curr.value);
