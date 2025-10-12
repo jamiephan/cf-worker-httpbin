@@ -1,6 +1,6 @@
 import { KVBin } from "./../interface/KBBin";
 import { Hono } from "hono";
-import { v4 as uuidv4 } from "uuid";
+import { nanoid } from "nanoid";
 import type { BinResponse } from "./../interface/BinResponse";
 import type { BinRequest } from "./../interface/BinRequest";
 
@@ -10,8 +10,8 @@ const app = new Hono<{ Bindings: Env }>();
 app.post("/api/bin", async (c) => {
   const req = await c.req.json<BinRequest>();
   // Generate a unique bin ID
-  const binId = uuidv4();
-  const token = uuidv4();
+  const binId = nanoid();
+  const token = nanoid();
   // Store the request data in KV
   await c.env.CF_KV.put(binId, JSON.stringify({ ...req, token: token }));
   return c.json<BinResponse>({
