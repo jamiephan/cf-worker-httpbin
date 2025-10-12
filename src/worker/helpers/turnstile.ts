@@ -21,7 +21,7 @@ async function validateTurnstile(
     return result as { success: boolean };
   } catch (error) {
     console.error("Turnstile validation error:", error);
-    return { success: false, "error-codes": ["internal-error"] };
+    return { success: false };
   }
 }
 
