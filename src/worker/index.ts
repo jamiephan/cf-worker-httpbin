@@ -10,8 +10,12 @@ app.get("/api/", (c) => c.json({ name: "Cloudflare" }));
 // A Post endpoint to receive the form data
 app.post("/api/bin", async (c) => {
   const req = await c.req.json<BinRequest>();
+  // Generate a unique bin ID
+  const binId = uuidv4();
+  // Store the request data in KV
+  await c.env.CF_KV.put(binId, JSON.stringify(req));
   return c.json<BinResponse>({
-    bin: uuidv4() + btoa(req.body).substring(0, 6),
+    bin: binId,
   });
 });
 
