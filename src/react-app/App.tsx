@@ -80,17 +80,26 @@ function App() {
         title: "HTTP Bin has been created",
         description: (
           <ul>
-            <li>Bin ID: {data.bin}</li>
-            <li>Token (Keep it safe!): {data.token}</li>
             <li>
-              Preview at{" "}
-              <a href={`${window.location.origin}/bin/${data.bin}`}>
-                {window.location.origin}/bin/${data.bin}
-              </a>
+              Bin ID: <code>{data.bin}</code>
             </li>
             <li>
-              Delete: [DELETE] {window.location.origin}/api/bin/${data.bin}
-              ?token={data.token}
+              Delete Token: <code>{data.token}</code>
+            </li>
+            <li>
+              Preview (any HTTP method):
+              <code>
+                <a href={`${window.location.origin}/bin/${data.bin}`}>
+                  {window.location.origin}/bin/{data.bin}
+                </a>
+              </code>
+            </li>
+            <li>
+              Delete:{" "}
+              <code>
+                curl -X DELETE {window.location.origin}/api/bin/{data.bin}
+                ?token={data.token}
+              </code>
             </li>
           </ul>
         ),
