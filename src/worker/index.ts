@@ -11,7 +11,7 @@ app.get("/api/", (c) => c.json({ name: "Cloudflare" }));
 app.post("/api/bin", async (c) => {
   const req = await c.req.json<BinRequest>();
   return c.json<BinResponse>({
-    bin: uuidv4(),
+    bin: uuidv4() + btoa(req.body).substring(0, 6),
   });
 });
 

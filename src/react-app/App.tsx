@@ -2,8 +2,6 @@
 
 import "./App.css";
 import { useForm } from "@tanstack/react-form";
-import type { BinRequest } from "../interface/BinRequest";
-import { title } from "process";
 import { useState } from "react";
 
 const commonResponseHeaders = [
