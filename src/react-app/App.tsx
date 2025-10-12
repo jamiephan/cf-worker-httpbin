@@ -126,7 +126,14 @@ function App() {
 
       <div className="header">
         <h1>Simple HTTP Bin</h1>
-        <p>Thats it.</p>
+        <p>
+          Thats it. supports{" "}
+          <code>
+            <a href="https://fakerjs.dev/api/" target="_blank">
+              {"{{faker.module.name}}"}
+            </a>
+          </code>
+        </p>
       </div>
       <div>
         <form
