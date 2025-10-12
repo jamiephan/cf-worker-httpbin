@@ -137,7 +137,7 @@ function App() {
   });
 
   return (
-    <main className="container">
+    <main className="container" style={{ marginTop: 32 }}>
       <dialog open={modelConfig.isOpen}>
         <article>
           <h2>{modelConfig.title}</h2>
