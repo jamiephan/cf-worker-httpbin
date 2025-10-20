@@ -3,59 +3,9 @@
 import { Turnstile } from "@marsidev/react-turnstile";
 import { useForm } from "@tanstack/react-form";
 import { useRef, useState } from "react";
+import { commonHeadersConfig, formTemplateConfig } from "../config";
 
 import "./App.css";
-
-const commonResponseHeaders = [
-  "Accept-CH",
-  "Access-Control-Allow-Origin",
-  "Access-Control-Allow-Credentials",
-  "Access-Control-Expose-Headers",
-  "Access-Control-Max-Age",
-  "Access-Control-Allow-Methods",
-  "Access-Control-Allow-Headers",
-  "Accept-Patch",
-  "Accept-Ranges",
-  "Age",
-  "Allow",
-  "Alt-Svc",
-  "Cache-Control",
-  "Connection",
-  "Content-Disposition",
-  "Content-Encoding",
-  "Content-Language",
-  "Content-Length",
-  "Content-Location",
-  "Content-MD5",
-  "Content-Range",
-  "Content-Type",
-  "Date",
-  "Delta-Base",
-  "ETag",
-  "Expires",
-  "IM",
-  "Last-Modified",
-  "Link",
-  "Location",
-  "P3P",
-  "Pragma",
-  "Preference-Applied",
-  "Proxy-Authenticate",
-  "Public-Key-Pins",
-  "Retry-After",
-  "Server",
-  "Set-Cookie",
-  "Strict-Transport-Security",
-  "Trailer",
-  "Transfer-Encoding",
-  "Tk",
-  "Upgrade",
-  "Vary",
-  "Via",
-  "Warning",
-  "WWW-Authenticate",
-  "X-Frame-Options",
-];
 
 function App() {
   const ref = useRef(null);
@@ -234,7 +184,7 @@ function App() {
 
           <h2>Headers</h2>
           <datalist id="common-response-headers">
-            {commonResponseHeaders.map((header) => (
+            {commonHeadersConfig.map((header) => (
               <option value={header} key={header} />
             ))}
           </datalist>
@@ -373,6 +323,37 @@ function App() {
             )}
           />
         </form>
+      </div>
+
+      <div style={{ marginTop: 16, marginBottom: 16 }}>
+        <details>
+          <summary>&#x1f4c3; Toggle Templates</summary>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const index = parseInt(
+                (e.currentTarget.elements[0] as HTMLSelectElement).value,
+                10
+              );
+              const template = formTemplateConfig[index];
+              console.log(template);
+              form.setFieldValue("statusCode", template.status);
+              form.setFieldValue("header", template.headers);
+              form.setFieldValue("body", template.body);
+            }}
+          >
+            <select>
+              {formTemplateConfig.map((template, index) => (
+                <option value={index} key={index}>
+                  {template.name}
+                </option>
+              ))}
+            </select>
+            <button type="submit" className="secondary">
+              Apply Template
+            </button>
+          </form>
+        </details>
       </div>
     </main>
   );
