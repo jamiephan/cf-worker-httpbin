@@ -17,9 +17,9 @@ function App() {
   });
   const form = useForm({
     defaultValues: {
-      statusCode: 200,
-      header: [] as { name: string; value: string }[],
-      body: "",
+      statusCode: formTemplateConfig[0].status,
+      header: formTemplateConfig[0].headers,
+      body: formTemplateConfig[0].body,
     },
     onSubmit: async ({ value }) => {
       // Get the Turnstile token
