@@ -5,6 +5,7 @@ import { useForm } from "@tanstack/react-form";
 import { useRef, useState } from "react";
 import { commonHeadersConfig, formTemplateConfig } from "../config";
 
+import { HTTPMethod } from "../const/HTTPMethod";
 import "./App.css";
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
   const form = useForm({
     defaultValues: {
       statusCode: formTemplateConfig[0].status,
+      method: formTemplateConfig[0].method as HTTPMethod,
       header: formTemplateConfig[0].headers,
       body: formTemplateConfig[0].body,
     },
@@ -143,6 +145,35 @@ function App() {
             form.handleSubmit();
           }}
         >
+          <h2>HTTP Method</h2>
+          <form.Field
+            name="method"
+            validators={{
+              onChange: ({ value }) =>
+                value === undefined || value === null
+                  ? "You must enter a status code"
+                  : undefined,
+            }}
+          >
+            {(subField) => {
+              return (
+                <div>
+                  <select
+                    value={subField.state.value}
+                    onChange={(e) =>
+                      subField.handleChange(e.target.value as HTTPMethod)
+                    }
+                  >
+                    {HTTPMethod.map((method) => (
+                      <option key={method} value={method}>
+                        {method}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              );
+            }}
+          </form.Field>
           <h2>HTTP Status Code</h2>
           <form.Field
             name="statusCode"

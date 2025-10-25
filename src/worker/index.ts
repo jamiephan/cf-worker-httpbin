@@ -33,6 +33,7 @@ app.post("/api/bin", async (c) => {
   await c.env.CF_KV.put(
     binId,
     JSON.stringify({
+      method: req.method,
       statusCode: req.statusCode,
       header: req.header,
       body: req.body,
@@ -69,11 +70,17 @@ app.delete("/api/bin/:binId", async (c) => {
 
 app.all("/bin/:binId", async (c) => {
   const { binId } = c.req.param();
+  const method = c.req.method;
   const binData = await c.env.CF_KV.get(binId);
   if (!binData) {
     return c.json({ error: "Not found" }, 404);
   }
   const data = JSON.parse(binData) as KVBin;
+
+  // Check if the method matches
+  if (data.method !== "ANY" && data.method !== method) {
+    return c.json({ error: "Method not allowed" }, 405);
+  }
 
   const body = placeholder(data.body);
 

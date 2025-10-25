@@ -1,7 +1,9 @@
+import { HTTPMethod } from "./../types/HTTPMethod";
 const formTemplate = [
   {
     name: "Regular - JSON - Success",
     status: 200,
+    method: "ANY",
     headers: [
       {
         name: "Content-Type",
@@ -13,6 +15,7 @@ const formTemplate = [
   {
     name: "Regular - JSON - Success (CORS)",
     status: 200,
+    method: "ANY",
     headers: [
       {
         name: "Content-Type",
@@ -28,6 +31,7 @@ const formTemplate = [
   {
     name: "Regular - JSON - Failure",
     status: 400,
+    method: "ANY",
     headers: [
       {
         name: "Content-Type",
@@ -39,6 +43,7 @@ const formTemplate = [
   {
     name: "Regular - HTML - Success",
     status: 200,
+    method: "ANY",
     headers: [
       {
         name: "Content-Type",
@@ -50,6 +55,7 @@ const formTemplate = [
   {
     name: "Regular - HTML - Success (CORS)",
     status: 200,
+    method: "ANY",
     headers: [
       {
         name: "Content-Type",
@@ -65,6 +71,7 @@ const formTemplate = [
   {
     name: "Regular - HTML - Failure",
     status: 400,
+    method: "ANY",
     headers: [
       {
         name: "Content-Type",
@@ -76,6 +83,7 @@ const formTemplate = [
   {
     name: "Regular - Plain Text - Success",
     status: 200,
+    method: "ANY",
     headers: [
       {
         name: "Content-Type",
@@ -87,6 +95,7 @@ const formTemplate = [
   {
     name: "Regular - Plain Text - Success (CORS)",
     status: 200,
+    method: "ANY",
     headers: [
       {
         name: "Content-Type",
@@ -102,6 +111,7 @@ const formTemplate = [
   {
     name: "Regular - Plain Text - Failure",
     status: 400,
+    method: "ANY",
     headers: [
       {
         name: "Content-Type",
@@ -113,6 +123,7 @@ const formTemplate = [
   {
     name: "Regular - XML - Success",
     status: 200,
+    method: "ANY",
     headers: [
       {
         name: "Content-Type",
@@ -124,6 +135,7 @@ const formTemplate = [
   {
     name: "Regular - XML - Success (CORS)",
     status: 200,
+    method: "ANY",
     headers: [
       {
         name: "Content-Type",
@@ -139,6 +151,7 @@ const formTemplate = [
   {
     name: "Regular - XML - Failure",
     status: 400,
+    method: "ANY",
     headers: [
       {
         name: "Content-Type",
@@ -152,6 +165,7 @@ const formTemplate = [
   {
     name: "Quirks - WWW-Authenticate - basic",
     status: 401,
+    method: "ANY",
     headers: [
       {
         name: "Content-Type",
@@ -167,6 +181,7 @@ const formTemplate = [
   {
     name: "Quirks - WWW-Authenticate - NTLM (Windows)",
     status: 401,
+    method: "ANY",
     headers: [
       {
         name: "Content-Type",
@@ -182,6 +197,7 @@ const formTemplate = [
   {
     name: "Quirks - WWW-Authenticate - Digest",
     status: 401,
+    method: "ANY",
     headers: [
       {
         name: "Content-Type",
@@ -198,6 +214,7 @@ const formTemplate = [
   {
     name: "Quirks - Empty Body - 204 No Content",
     status: 204,
+    method: "ANY",
     headers: [
       {
         name: "Content-Type",
@@ -209,6 +226,7 @@ const formTemplate = [
   {
     name: "Quirks - 302 Redirect",
     status: 302,
+    method: "ANY",
     headers: [
       {
         name: "Location",
@@ -220,6 +238,7 @@ const formTemplate = [
   {
     name: "Quirks - Cookie Header",
     status: 200,
+    method: "ANY",
     headers: [
       {
         name: "Content-Type",
@@ -238,6 +257,7 @@ const formTemplate = [
 type FormTemplateEntry = {
   name: string;
   status: number;
+  method: HTTPMethod;
   headers: Array<{
     name: string;
     value: string;
