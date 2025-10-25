@@ -11,11 +11,11 @@ const app = new Hono<{ Bindings: Env }>();
 // A Post endpoint to receive the form data
 app.post("/api/bin", async (c) => {
   const req = await c.req.json<BinRequestCaptcha>();
+  const remoteIp = c.req.header("CF-Connecting-IP") || "";
 
   try {
     // Validate Turnstile token
     const turnstileToken = req.turnstileToken;
-    const remoteIp = c.req.header("CF-Connecting-IP") || "";
 
     const r = await validateTurnstile(turnstileToken, remoteIp);
     if (!r.success) {
@@ -37,6 +37,7 @@ app.post("/api/bin", async (c) => {
       header: req.header,
       body: req.body,
       token: token,
+      ipAddress: remoteIp,
     } as KVBin)
   );
   return c.json<BinResponse>({
