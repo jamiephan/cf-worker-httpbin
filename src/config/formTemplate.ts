@@ -1,4 +1,16 @@
-import { HTTPMethod } from "./../types/HTTPMethod";
+import type { HTTPMethod } from './../const/HTTPMethod';
+
+type FormTemplateEntry = {
+  name: string;
+  status: number;
+  method: HTTPMethod;
+  headers: Array<{
+    name: string;
+    value: string;
+  }>;
+  body: string;
+};
+
 const formTemplate = [
   {
     name: "Regular - JSON - Success",
@@ -10,7 +22,7 @@ const formTemplate = [
         value: "application/json",
       },
     ],
-    body: `{ msg: "Hello, {{faker.person.firstName}}. This is a successful JSON response. " }`,
+    body: `{ "msg": "Hello, {{faker.person.firstName}}. This is a successful JSON response. " }`,
   },
   {
     name: "Regular - JSON - Success (CORS)",
@@ -26,7 +38,7 @@ const formTemplate = [
         value: "*",
       },
     ],
-    body: `{ msg: "Hello, {{faker.person.firstName}}. This is a successful CORS JSON response. " }`,
+    body: `{ "msg": "Hello, {{faker.person.firstName}}. This is a successful CORS JSON response. " }`,
   },
   {
     name: "Regular - JSON - Failure",
@@ -38,7 +50,47 @@ const formTemplate = [
         value: "application/json",
       },
     ],
-    body: `{ msg: "Hello, {{faker.person.firstName}}. This is a failed JSON response. " }`,
+    body: `{ "msg": "Hello, {{faker.person.firstName}}. This is a failed JSON response. " }`,
+  },
+  {
+    name: "Regular - JS - Success",
+    status: 200,
+    method: "ANY",
+    headers: [
+      {
+        name: "Content-Type",
+        value: "text/javascript",
+      },
+    ],
+    body: `alert("Hello, {{faker.person.firstName}}. This is a successful JS response.");`,
+  },
+  {
+    name: "Regular - JS - Success (CORS)",
+    status: 200,
+    method: "ANY",
+    headers: [
+      {
+        name: "Content-Type",
+        value: "text/javascript",
+      },
+      {
+        name: "Access-Control-Allow-Origin",
+        value: "*",
+      },
+    ],
+    body: `alert("Hello, {{faker.person.firstName}}. This is a successful CORS JS response.");`,
+  },
+  {
+    name: "Regular - JS - Failure",
+    status: 400,
+    method: "ANY",
+    headers: [
+      {
+        name: "Content-Type",
+        value: "text/javascript",
+      },
+    ],
+    body: `alert("Hello, {{faker.person.firstName}}. This is a failed JS response.");`,
   },
   {
     name: "Regular - HTML - Success",
@@ -252,17 +304,8 @@ const formTemplate = [
     ],
     body: `{ msg: "Hello, {{faker.person.firstName}}. This response includes a Set-Cookie header." }`,
   },
-];
+] as FormTemplateEntry[]
 
-type FormTemplateEntry = {
-  name: string;
-  status: number;
-  method: HTTPMethod;
-  headers: Array<{
-    name: string;
-    value: string;
-  }>;
-  body: string;
-};
 
-export default formTemplate as FormTemplateEntry[];
+
+export default formTemplate;
