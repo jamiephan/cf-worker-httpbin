@@ -64,7 +64,7 @@ function App() {
               {" "}
               <u style={{cursor: "pointer"}} onClick={() => navigator.clipboard.writeText(`${window.location.origin}/bin/${data.bin}`)}>Copy</u>
               <code>
-                <a href={`${window.location.origin}/bin/${data.bin}`}>
+                <a href={`${window.location.origin}/bin/${data.bin}`} target="_blank" rel="noreferrer noopener">
                   {window.location.origin}/bin/{data.bin}
                 </a>
               </code>
