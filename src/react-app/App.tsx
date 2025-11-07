@@ -62,7 +62,7 @@ function App() {
             <li>
               Preview (any HTTP method):
               {" "}
-              <u style={{cursor: "pointer"}} onClick={() => navigator.clipboard.writeText(`${window.location.origin}/bin/${data.bin}`)}>Copy</u>
+              <small style={{cursor: "pointer"}} onClick={() => navigator.clipboard.writeText(`${window.location.origin}/bin/${data.bin}`)}>Copy</small>
               <code>
                 <a href={`${window.location.origin}/bin/${data.bin}`} target="_blank" rel="noreferrer noopener">
                   {window.location.origin}/bin/{data.bin}
